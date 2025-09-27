@@ -98,3 +98,22 @@ export const signin = async(req , res) => {
         })
     }
 }
+
+
+export const signout = async(req, res) =>{
+    try{
+        res.clearCookie("token");
+
+        return res.status(200).json({
+            success:true , 
+            message:"Logged out successfully"
+        });
+    }
+    catch(error){
+        console.log("Logout Error:" , error)
+        res.status(500).json({
+            success:false , 
+            message : "Server error during logout"
+        });
+    }
+};
