@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken"
 
 export const registerUser = async (req, res) => {
   try {
@@ -42,3 +42,59 @@ export const registerUser = async (req, res) => {
     });
   }
 };
+
+
+export const signin = async(req , res) => {
+    try{
+        const {email, password} = req.body;
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({
+                success:false , 
+                message:"Invalid username or password"
+            });
+        }
+        const isMatch = await bcrypt.compare(password , user.password);
+        if(!isMatch){
+            return res.status(400).json({
+                success:false, 
+                message:"Invalid password or username"
+            });
+        }
+        const token = jwt.sign(
+        {
+            id:user._id , 
+            role: user.role
+        },
+        process.env.JWT_SECRET_KEY , 
+        {expiresIn:"7d"}
+        )
+
+        res.cookie("token" , token , {
+            httpOnly:true , 
+            secure : false , 
+            sameSite:"strict" , 
+            maxAge: 7*24*60*60*1000
+        });
+
+        res.status(200).json({
+            success:true , 
+            message:"Login successfull" ,
+            token , 
+            user:{
+                id:user._id , 
+                username:user.username , 
+                email:user.email , 
+                role:user.role
+            }
+        })
+
+    }
+    catch(error){
+        console.log("Login error" , error);
+        res.status(500).json({
+            success:false , 
+            message:"Sever error during login"
+        })
+    }
+}
