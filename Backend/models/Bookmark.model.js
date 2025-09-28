@@ -19,4 +19,5 @@ const bookmarkSchema = new mongoose.Schema({
 bookmarkSchema.index({user:1 , post:1} , {unique:true});
 
 
-export default mongoose.model("Bookmark" , bookmarkSchema)
+const Bookmark = mongoose.model("Bookmark"  , bookmarkSchema);
+export default Bookmark;
