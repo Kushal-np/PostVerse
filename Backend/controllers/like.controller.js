@@ -1,5 +1,5 @@
-import Like from "../models/Like.model";
-import Post from "../models/post.model";
+import Like from "../models/Like.model.js";
+import Post from "../models/post.model.js";
 
 export const toggleLikePost = async (req, res) => {
   try {
@@ -25,14 +25,10 @@ export const toggleLikePost = async (req, res) => {
     }
 
     let reaction = await Like.findOne({ user: userId, post: postId });
-    let message = "Reaction Updated";
+    let message = "Reaction updated";
 
     if (!reaction) {
-      reaction = await Like.create({
-        user: userId,
-        post: postId,
-        type,
-      });
+      reaction = await Like.create({ user: userId, post: postId, type });
     } else if (reaction.type === type) {
       await reaction.deleteOne();
       message = "Reaction removed";
@@ -40,17 +36,21 @@ export const toggleLikePost = async (req, res) => {
       reaction.type = type;
       await reaction.save();
     }
+
     const reactionCounts = await Like.aggregate([
       { $match: { post: post._id } },
-      { $group: { _id: "type", count: { $sum: 1 } } },
+      { $group: { _id: "$type", count: { $sum: 1 } } },
     ]);
+
     const reactions = Reaction_Types.reduce((acc, t) => {
       acc[t] = 0;
       return acc;
     }, {});
+
     reactionCounts.forEach((rc) => {
-      reaction[rc._id] = rc.count;
+      reactions[rc._id] = rc.count;
     });
+
     res.status(200).json({
       success: true,
       message,
@@ -59,7 +59,7 @@ export const toggleLikePost = async (req, res) => {
   } catch (error) {
     console.log("Toggle reaction post error");
     console.log(error.message);
-    res.staus(501).json({
+    res.status(500).json({
       success: false,
       message: "Internal server error",
       error: error.message,
@@ -69,24 +69,26 @@ export const toggleLikePost = async (req, res) => {
 
 
 
-export const getLikes = async(req,res)=>{
-    try{
-        const{postId , commentId} = req.query ; 
-        const likes = await Like.find({post:postid || null , comment : commentId || null})
-        .populate("user" , "username email role");
+export const getLikes = async (req, res) => {
+  try {
+    const { postId, commentId } = req.query;
 
-        res.status(200).json({
-            success:true , 
-            likes , 
-            count:likes.length
-        })
- 
-    }
-    catch(error){
-        console.log(error);
-        res.status(501).json({
-            success:false , 
-            message:"Internal server error"
-        })
-    }
+    const query = {};
+    if (postId) query.post = postId;
+    if (commentId) query.comment = commentId;
+
+    const likes = await Like.find(query).populate("user", "username email role");
+
+    res.status(200).json({
+      success: true,
+      likes,
+      count: likes.length
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
 };

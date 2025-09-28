@@ -1,12 +1,13 @@
-import express from "express"
-import { toggleLikeComment } from "../controllers/comment.controller";
-import { getLikes, toggleLikePost } from "../controllers/like.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
+import express from "express";
+import { toggleLikePost, getLikes } from "../controllers/like.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+
 const router = express.Router();
 
-router.post("/toggle" ,authMiddleware ,  toggleLikePost) ; 
-router.get("/:postId" , getLikes) ; 
-router.get("/:commentId " , getCommentsLikes )
+
+router.patch("/post/:postId/toggle", authMiddleware, toggleLikePost);
 
 
-export default router ;
+router.get("/post/:postId", getLikes);
+
+export default router;
