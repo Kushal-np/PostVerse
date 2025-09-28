@@ -97,15 +97,22 @@ export const getPostById = async (req, res) => {
   }
 };
 
+
 export const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+    if (!post)
+      return res.status(404).json({ success: false, message: "Post not found" });
 
-    if (post.author.toString() !== req.user._id.toString() && !["admin", "editor"].includes(req.user.role)) {
+    // Authorization check
+    if (
+      post.author.toString() !== req.user._id.toString() &&
+      !["admin", "editor"].includes(req.user.role)
+    ) {
       return res.status(403).json({ success: false, message: "Not authorized" });
     }
 
+    // Handle cover image upload if provided
     if (req.file) {
       const streamUpload = (reqFile) => {
         return new Promise((resolve, reject) => {
@@ -132,20 +139,30 @@ export const updatePost = async (req, res) => {
       req.body.coverImage = coverImageDoc._id;
     }
 
+    // Update fields
     Object.assign(post, req.body);
 
+    // If post is published now and wasn't before
     if (req.body.status === "published" && !post.publishedAt) {
       post.publishedAt = new Date();
     }
 
     await post.save();
 
-    res.status(200).json({ success: true, post });
+    // Populate before sending
+    const populatedPost = await Post.findById(post._id)
+      .populate("coverImage")
+      .populate("author", "username role");
+
+    res.status(200).json({ success: true, post: populatedPost });
   } catch (err) {
     console.error("Update Post Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error updating post" });
   }
 };
+
 
 export const deletePost = async (req, res) => {
   try {
