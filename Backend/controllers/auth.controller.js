@@ -118,3 +118,23 @@ export const signout = async(req, res) =>{
         });
     }
 };
+
+
+
+export const getAllUsers = async(req , res) =>{
+  try{
+    const user = await User.find();
+    res.status(201).json({
+      user , 
+    })
+  }
+  catch(error){
+    console.log(error.message);
+    res.status(500).json({
+      success:false , 
+      message: "Internal server error"
+    })
+  }
+}
+
+//random uid : 68d8e22c1dde8572b9e8eb18  //shah rukh khan
