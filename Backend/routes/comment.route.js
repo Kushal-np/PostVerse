@@ -21,8 +21,7 @@ router.post(
   createComment
 );
 
-router.get("/:postId", getCommentsByPost, getPostById);
-
+router.get("/:postId", getCommentsByPost);
 router.patch(
   "/edit/:commentId",
   authMiddleware,
@@ -30,7 +29,7 @@ router.patch(
   updateComment
 );
 
-router.patch("/like/:commentId", authMiddleware, toggleLikeComment);
+router.patch("/:commentId/like", authMiddleware, toggleLikeComment);
 
 router.delete(
   "/:commentId",

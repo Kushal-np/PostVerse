@@ -1,9 +1,10 @@
+import Like from "../models/Like.model.js";
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js";
 
 export const createComment = async (req, res) => {
   try {
-    const { post: postId, parent, body } = req.body;
+    const {  postId, parent, body } = req.body;
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -58,6 +59,10 @@ export const getCommentsByPost = async (req, res) => {
     })
       .populate("author", "username role")
       .sort({ createdAt: 1 });
+    res.status(201).json({
+        success:true , 
+        comments
+    })
   } catch (error) {
     console.log("Get comments error", error);
     res.status(500).json({
@@ -97,49 +102,61 @@ export const updateComment = async (req, res) => {
   }
 };
 
-import Like from "../models/like.model.js";
-import Comment from "../models/comment.model.js";
+
 
 
 export const toggleLikeComment = async (req, res) => {
-    try {
-    const REACTION_TYPES = ["like", "dislike ", "love", "fire"];
+  try {
+    console.log("line no. 110")
+    const REACTION_TYPES = ["like", "dislike", "love", "fire"];
     const { commentId } = req.params;
-    const { type } = req.body; 
+    const { type } = req.body;
     const userId = req.user._id;
+
+    if (!REACTION_TYPES.includes(type)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid reaction type" 
+      });
+    }
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ success: false, message: "Comment not found" });
     }
 
-    let like = await Like.findOne({ user: userId, comment: commentId });
+    let reaction = await Like.findOne({ user: userId, comment: commentId });
 
-    if (!like) {
-      like = await Like.create({ user: userId, comment: commentId, type });
-    } else if (like.type === type) {
-      await like.deleteOne();
-      return res.status(200).json({ success: true, message: "Reaction removed" });
+    let message = "Reaction updated";
+    if (!reaction) {
+      reaction = await Like.create({ user: userId, comment: commentId, type });
+    } else if (reaction.type === type) {
+      await reaction.deleteOne();
+      message = "Reaction removed";
     } else {
-      like.type = type;
-      await like.save();
+      reaction.type = type;
+      await reaction.save();
     }
 
-    const reactions = {};
-    for (const reactionType of REACTION_TYPES) {
-      reactions[reactionType] = await Like.countDocuments({ comment: commentId, type: reactionType });
-    }
+    const reactionCounts = await Like.aggregate([
+      { $match: { comment: comment._id } },
+      { $group: { _id: "$type", count: { $sum: 1 } } }
+    ]);
+
+    const reactions = REACTION_TYPES.reduce((acc, t) => { acc[t] = 0; return acc; }, {});
+    reactionCounts.forEach(rc => { reactions[rc._id] = rc.count; });
 
     res.status(200).json({
       success: true,
-      message: "Reaction updated",
-      reactions,
+      message,
+      reactions
     });
+
   } catch (error) {
-    console.error("Toggle like comment Error:", error);
+    console.error("Toggle reaction comment Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error toggling reaction",
+      message: "Server error toggling reaction"
     });
   }
 };
