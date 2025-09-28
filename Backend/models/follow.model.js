@@ -13,9 +13,12 @@ const followSchema = new mongoose.Schema({
         required:true 
     }
 },{
-    timestamps:times 
+    timestamps:true 
 });
 
 followSchema.index({follower:1 , following:1} , {unique:true})
 
-export const Follow = mongoose.model("Follow" , followSchema);
+ const Follow = mongoose.model("Follow" , followSchema);
+ export default Follow;
+
+

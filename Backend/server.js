@@ -2,21 +2,23 @@ import express from 'express';
 const app = express();
 import dotenv from "dotenv";
 import connectDB from './config/db.js';
-import authRoutes from "./routes/auth.routes.js"
-import postRoutes from "./routes/post.routes.js"
-import commentRoutes from "./routes/comment.route.js"
-import bookmarkRoutes from "./routes/bookmark.route.js"
-import likeRoutes from "./routes/like.route.js"
+import authRoutes from "./routes/auth.routes.js";
+import postRoutes from "./routes/post.routes.js";
+import commentRoutes from "./routes/comment.route.js";
+import bookmarkRoutes from "./routes/bookmark.route.js";
+import likeRoutes from "./routes/like.route.js";
+import followRoutes from "./routes/follow.route.js";
 import cookieParser from 'cookie-parser';
 dotenv.config();
 const PORT = process.env.PORT ; 
-app.use(express.json())
-app.use(cookieParser())
-app.use("/api/user" , authRoutes)
-app.use("/api/post" , postRoutes)
-app.use("/api/comments" , commentRoutes) 
+app.use(express.json());
+app.use(cookieParser());
+app.use("/api/user" , authRoutes);
+app.use("/api/post" , postRoutes);
+app.use("/api/comments" , commentRoutes);
 app.use("/api/bookmarks" , bookmarkRoutes);
-app.use("/api/likes" , likeRoutes)
+app.use("/api/follow" , followRoutes);
+app.use("/api/likes" , likeRoutes);
 app.listen(PORT , ()=>{
     console.log(`Server is running at the ${PORT}`); 
     connectDB();
