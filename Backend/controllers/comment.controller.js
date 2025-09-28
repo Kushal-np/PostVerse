@@ -1,4 +1,3 @@
-
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js";
 
@@ -68,106 +67,128 @@ export const getCommentsByPost = async (req, res) => {
   }
 };
 
-export const updateComment = async(req, res)=>{
-    try{
-        const {commentId} = req.params ; 
-        const {body} = req.body;
-        const comment = await Comment.findById(commentId);
-        if(comment.author.toString() !== req.user._id.toString() && !["admin","editor"].includes(req.user.role)){
-            return res.status(403).json({
-                success:false , 
-                message:"Not authorized to edit the comment"
-
-            })
-        }
-        comment.body = body || comment.body ; 
-        await comment.save();
-
-        res.status(200).json({
-            success:true , 
-            comment 
-        })
+export const updateComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { body } = req.body;
+    const comment = await Comment.findById(commentId);
+    if (
+      comment.author.toString() !== req.user._id.toString() &&
+      !["admin", "editor"].includes(req.user.role)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to edit the comment",
+      });
     }
-    catch(error){
-        console.log("Update comment error" , error);
-        res.status(500).json({
-            success:false , 
-            message:"Internal server error"
-        })
+    comment.body = body || comment.body;
+    await comment.save();
+
+    res.status(200).json({
+      success: true,
+      comment,
+    });
+  } catch (error) {
+    console.log("Update comment error", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+import Like from "../models/like.model.js";
+import Comment from "../models/comment.model.js";
+
+// List of all reaction types (from your enum)
+const REACTION_TYPES = ["like", "love", "fire", "thumb"];
+
+export const toggleLikeComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { type } = req.body; // "like", "love", etc.
+    const userId = req.user._id;
+
+    // 1️⃣ Check if comment exists
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comment not found" });
     }
-}
 
+    // 2️⃣ Find existing like by this user on this comment
+    let like = await Like.findOne({ user: userId, comment: commentId });
 
-export const toggleLikeComment = async(req , res) =>{
-    try{
-        const {commentId} = req.params ; 
-        const comment = await Comment.findById(commentId);
-        if(!comment){
-            return res.status(404).json({
-                success:false , 
-                message:"No comments found", 
-            })
-        }
-        const userId = req.user._id.toString();
-        const linkedIndex = comment.likes.findIndex(id=> id.toString()=== userId);
-
-        if(linkedIndex===-1){
-            comment.likes.push(userId);
-        }
-        else{
-            comment.likes.splice(linkedIndex , 1);
-        }
-        await comment.save();
-        res.status(200).json({
-            success:true , 
-            message:"Server error liking Comment"
-        })
-    } 
-    catch(error){
-        console.log("Toggle like comment Error:" , error );
-        res.status(500).json({
-            success:false , 
-            message:"Server error liking comment "
-        })
+    if (!like) {
+      // New reaction
+      like = await Like.create({ user: userId, comment: commentId, type });
+    } else if (like.type === type) {
+      // Same reaction → remove
+      await like.deleteOne();
+      return res.status(200).json({ success: true, message: "Reaction removed" });
+    } else {
+      // Different reaction → update
+      like.type = type;
+      await like.save();
     }
-}
 
-
-export const deleteComment = async(req, res)=>{
-    try{
-        const {commentId} = req.params; 
-        const comment = await Comment.findById(commentId);
-        if(!comment){
-            return res.staus(404).json({
-                success:false , 
-                message:"Comment not found"
-            });
-        }
-        else{
-            if(comment.author.toString() !== req.user._id.toString() && !["admin" , "editor" ].includes(req.user.role)){
-                return res.status(403).json({
-                    success:false, 
-                    message:"Not authorized"
-                })
-            }
-            await Comment.findByIdAndDelete(commentId);
-
-            const post = await Post.findById(comment.post);
-            if(post){
-                post.commentsCount = Math.max((post.commentsCount || 1)-1 , 0 );
-                await post.save();
-            }
-            res.status(200).json({
-                success:true , 
-                messsage:"Comment deleted"
-            });
-        }
+    // 3️⃣ Count reactions per type (simpler method)
+    const reactions = {};
+    for (const reactionType of REACTION_TYPES) {
+      reactions[reactionType] = await Like.countDocuments({ comment: commentId, type: reactionType });
     }
-    catch(error){
-        console.log("Delete comment error: " , error);
-        res.status(500).json({
-            success:false , 
-            message:"Server error deleting the comments"
-        })
+
+    res.status(200).json({
+      success: true,
+      message: "Reaction updated",
+      reactions,
+    });
+  } catch (error) {
+    console.error("Toggle like comment Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error toggling reaction",
+    });
+  }
+};
+
+
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.staus(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    } else {
+      if (
+        comment.author.toString() !== req.user._id.toString() &&
+        !["admin", "editor"].includes(req.user.role)
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Not authorized",
+        });
+      }
+      await Comment.findByIdAndDelete(commentId);
+
+      const post = await Post.findById(comment.post);
+      if (post) {
+        post.commentsCount = Math.max((post.commentsCount || 1) - 1, 0);
+        await post.save();
+      }
+      res.status(200).json({
+        success: true,
+        messsage: "Comment deleted",
+      });
     }
-}
+  } catch (error) {
+    console.log("Delete comment error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error deleting the comments",
+    });
+  }
+};
