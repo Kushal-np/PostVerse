@@ -1,5 +1,6 @@
 
 import express from "express";
+import { createComment } from "../controllers/comment.controller";
 const router = express.Router();
 
 

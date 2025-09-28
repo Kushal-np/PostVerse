@@ -25,6 +25,10 @@ const PostSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Media', 
     },
+    commentsCount:{
+      type:Number , 
+      default:0
+    },
     status: {
       type: String,
       enum: ['draft', 'published'],
