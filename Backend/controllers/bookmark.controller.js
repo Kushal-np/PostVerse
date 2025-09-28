@@ -1,5 +1,5 @@
-import Bookmark from "../models/Bookmark.model";
-import Post from "../models/post.model";
+import Bookmark from "../models/Bookmark.model.js";
+import Post from "../models/post.model.js";
 
 export const addBookmark = async(req , res)=>{
     try{
@@ -13,7 +13,7 @@ export const addBookmark = async(req , res)=>{
                 message:"Post not found"
             })
         }
-        const existingBookmark = await BookmarkModel.findOne({
+        const existingBookmark = await Bookmark.findOne({
             user:userId , 
             post:postId
         });
@@ -77,7 +77,7 @@ export const getAllBookmarks = async(req , res)=>{
             path:"post",
             populate:[
                 {path:"author" , select:"username role"},
-                {path:coverImage}
+                {path:"coverImage"}
             ]
         })
 
