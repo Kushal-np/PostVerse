@@ -1,6 +1,7 @@
 import express from "express";
 import { authMiddleware, authorizeRoles } from "../middlewares/auth.middleware";
 import { createCategory, deleteCategory, getCategories } from "../controllers/category.controller";
+import { createTag, deleteTag, getTags } from "../controllers/Tags.controller";
 const router = express.Router();
 
 
@@ -11,7 +12,7 @@ router.delete("/categories/:id" , authMiddleware , authorizeRoles("admin") , del
 
 
 
-router.post("/tags" , authMiddleware , authorizeRoles("admin" , "editor") , createTags);
+router.post("/tags" , authMiddleware , authorizeRoles("admin" , "editor") , createTag);
 router.get("/tags" , getTags);
 router.delete("/tags/:id" , authMiddleware , authorizeRoles("admin") , deleteTag)
 

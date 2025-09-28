@@ -9,6 +9,7 @@ import bookmarkRoutes from "./routes/bookmark.route.js";
 import likeRoutes from "./routes/like.route.js";
 import followRoutes from "./routes/follow.route.js";
 import cookieParser from 'cookie-parser';
+import categoriesAndTagsRoutes from "./routes/CategoryAndTag.route.js"
 dotenv.config();
 const PORT = process.env.PORT ; 
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use("/api/comments" , commentRoutes);
 app.use("/api/bookmarks" , bookmarkRoutes);
 app.use("/api/follow" , followRoutes);
 app.use("/api/likes" , likeRoutes);
+app.use("api/CategoryAndTags/" , categoriesAndTagsRoutes)
 app.listen(PORT , ()=>{
     console.log(`Server is running at the ${PORT}`); 
     connectDB();
