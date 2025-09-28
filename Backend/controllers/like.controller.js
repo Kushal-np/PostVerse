@@ -66,3 +66,27 @@ export const toggleLikePost = async (req, res) => {
     });
   }
 };
+
+
+
+export const getLikes = async(req,res)=>{
+    try{
+        const{postId , commentId} = req.query ; 
+        const likes = await Like.find({post:postid || null , comment : commentId || null})
+        .populate("user" , "username email role");
+
+        res.status(200).json({
+            success:true , 
+            likes , 
+            count:likes.length
+        })
+ 
+    }
+    catch(error){
+        console.log(error);
+        res.status(501).json({
+            success:false , 
+            message:"Internal server error"
+        })
+    }
+};
