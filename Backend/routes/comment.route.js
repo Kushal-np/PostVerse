@@ -1,14 +1,42 @@
-
 import express from "express";
-import { createComment } from "../controllers/comment.controller";
+import {
+  createComment,
+  deleteComment,
+  toggleLikeComment,
+  updateComment,
+  getCommentsByPost,
+} from "../controllers/comment.controller.js";
+import {
+  authMiddleware,
+  authorizeRoles,
+} from "../middlewares/auth.middleware.js";
+import { getPostById } from "../controllers/post.controller.js";
+
 const router = express.Router();
 
+router.post(
+  "/",
+  authMiddleware,
+  authorizeRoles("writer", "author", "editor", "admin"),
+  createComment
+);
 
-router.post("/" , authMiddleware , createComment) ; 
-router.get("/:postId" , getCommentsByPost) ; 
-router.patch("/edit/:commentId" , authMiddleware , updateComment) ; 
-router.patch("/like/:commentId" , authMiddleware , likeComment);
-router.delete("/:commentId" , authMiddleware , deleteComment); 
+router.get("/:postId", getCommentsByPost, getPostById);
 
+router.patch(
+  "/edit/:commentId",
+  authMiddleware,
+  authorizeRoles("writer", "author", "editor", "admin"),
+  updateComment
+);
 
-export default router ; 
+router.patch("/like/:commentId", authMiddleware, toggleLikeComment);
+
+router.delete(
+  "/:commentId",
+  authMiddleware,
+  authorizeRoles("writer", "author", "editor", "admin"),
+  deleteComment
+);
+
+export default router;
