@@ -26,8 +26,13 @@ const UserSchema = new mongoose.Schema({
     bio:{
         type:String , 
     },
-    avatarUrl:{
-        type:String ,
+    profilePicture:{
+        type:String , 
+        default:""
+    },
+    coverPicture:{
+        type:String , 
+        default:""
     },
     social:{
         twitter:String,
