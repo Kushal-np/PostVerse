@@ -137,4 +137,19 @@ export const getAllUsers = async(req , res) =>{
   }
 }
 
-//random uid : 68d8e22c1dde8572b9e8eb18  //shah rukh khan
+export const getMe = async(req , res)=>{
+  try{
+    const userId = req.user._id ; 
+    const Me = await User.findById({userId});
+    res.status(201).json({
+      success:true , 
+      Me , 
+    })
+  }
+  catch(error){
+    return res.status(500).json({
+      success:false , 
+      message:"Internal server error"
+    })
+  }
+}
