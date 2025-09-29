@@ -1,4 +1,4 @@
-import Post from "../models/post.model";
+import Post from "../models/post.model.js";
 
 export const getFeedPostsInfinite = async(req , res)=>{
     try{

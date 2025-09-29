@@ -11,6 +11,7 @@ import followRoutes from "./routes/follow.route.js";
 import notificationRoutes from "./routes/notification.route.js"
 import profileRoutes from "./routes/profile.route.js"
 import cookieParser from 'cookie-parser';
+import feedRoutes from "./routes/feed.route.js"
 import categoriesAndTagsRoutes from "./routes/CategoryAndTag.route.js"
 dotenv.config();
 const PORT = process.env.PORT ; 
@@ -25,6 +26,7 @@ app.use("/api/likes" , likeRoutes);
 app.use("api/CategoryAndTags/" , categoriesAndTagsRoutes);
 app.use("/api/Notifications" , notificationRoutes);
 app.use("/api/picture" , profileRoutes);
+app.use("/api/home" , feedRoutes)
 app.listen(PORT , ()=>{
     console.log(`Server is running at the ${PORT}`); 
     connectDB();
