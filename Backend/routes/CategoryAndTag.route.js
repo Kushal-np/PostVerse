@@ -1,7 +1,7 @@
 import express from "express";
-import { authMiddleware, authorizeRoles } from "../middlewares/auth.middleware";
-import { createCategory, deleteCategory, getCategories } from "../controllers/category.controller";
-import { createTag, deleteTag, getTags } from "../controllers/Tags.controller";
+import { authMiddleware, authorizeRoles } from "../middlewares/auth.middleware.js";
+import { createCategory, deleteCategory, getCategories } from "../controllers/category.controller.js";
+import { createTag, deleteTag, getTags } from "../controllers/Tags.controller.js";
 const router = express.Router();
 
 
