@@ -33,8 +33,8 @@ export const Login = () =>{
 
     return (
         <form onSubmit={handleSubmit}>
-            <input type="email" value={email} placeholder="Enter Email" required />
-            <input type="password" value={password} placeholder="Enter password" required />
+            <input type="email" value={email} placeholder="Enter Email" required onChange={(e)=>{e.target.value}}/>
+            <input type="password" value={password} placeholder="Enter password" required onChange={(e)=>{e.target.value}}/>
             <button type="submit">
                 {
                     loginMutation.isLoading ? "Logging in..." : "Login"
