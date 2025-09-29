@@ -11,7 +11,6 @@ export const updateProfileImage = async (req, res) => {
       return res.status(400).json({ success: false, message: "No image uploaded" });
     }
 
-    // Upload buffer to Cloudinary
     const uploadFromBuffer = (buffer) =>
       new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(

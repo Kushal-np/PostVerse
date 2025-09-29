@@ -140,7 +140,7 @@ export const getAllUsers = async(req , res) =>{
 export const getMe = async(req , res)=>{
   try{
     const userId = req.user._id ; 
-    const Me = await User.findById({userId});
+    const Me = await User.findById(userId);
     res.status(201).json({
       success:true , 
       Me , 
