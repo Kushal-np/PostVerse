@@ -3,7 +3,7 @@ import { create } from 'zustand';
 const useAuthStore = create((set, get) => ({
   user: null,
   token: null,
-  isAuthenticated: false,
+  isAuthenticated: null,
 
   setAuth: (user, token) => {
     localStorage.setItem("token", token);
@@ -15,6 +15,8 @@ const useAuthStore = create((set, get) => ({
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     set({ user: null, token: null, isAuthenticated: false });
+ 
+    console.log("logged out")
   },
 
   restore: () => {
@@ -23,7 +25,9 @@ const useAuthStore = create((set, get) => ({
     if (token && user) {
       set({ token, user: JSON.parse(user), isAuthenticated: true });
     }
-  }
+  },
+
+  
 }));
 
 export default useAuthStore;

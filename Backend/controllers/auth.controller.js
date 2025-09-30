@@ -1,7 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
-import User from "../models/user.model.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -142,7 +141,7 @@ export const getAllUsers = async(req , res) =>{
 export const getMe = async(req , res)=>{
   try{
     const userId = req.user._id ; 
-    const Me = await User.findById(userId);
+    const Me = await User.findById(userId).select("username email role theme")
     res.status(201).json({
       success:true , 
       Me , 

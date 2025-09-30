@@ -15,5 +15,10 @@ export const useSignUp = () => useMutation({
         return data ; 
     }
 });
-export const useSignOut = () => useMutation(signOut);
+export const useSignOut = () => useMutation({
+    mutationFn:async()=>{
+        const data = await signOut();
+        return data ; 
+    }
+});
 export const useAllUsers = ()=> useMutation(fetchAllUsers);

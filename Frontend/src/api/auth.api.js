@@ -12,7 +12,7 @@ export const login = async(credentials) =>{
 };
 
 export const signOut = async()=>{
-    const res = await api.post("/signout") ; 
+    const res = await api.post("/user/signout") ; 
     return res.data ; 
 };
 
