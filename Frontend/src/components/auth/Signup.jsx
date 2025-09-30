@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useSignUp } from "../../queries/useAuth";
 import  useAuthStore  from "../../stores/AuthStore";
+import { useState } from "react";
 
 
 
@@ -12,7 +13,7 @@ export const Signup = () =>{
     const navigate = useNavigate();
 
     const handleSubmit = async(e) =>{
-
+        console.log(username , email , password)
         e.preventDefault();
         try{
             const data = await signupMutation.mutateAsync({username , email , password});

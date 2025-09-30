@@ -12,8 +12,6 @@ export const Login = () =>{
     const navigate = useNavigate();
 
     const handleSubmit = async(e) =>{
-        console.log(email)
-        console.log(password)
         e.preventDefault();
         try{
             const data = await loginMutation.mutateAsync({email , password});
