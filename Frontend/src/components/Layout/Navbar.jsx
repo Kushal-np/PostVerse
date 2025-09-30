@@ -1,11 +1,10 @@
-// src/components/PostVerseNavbar.jsx
+// src/components/Navbar.jsx
+import { NavLink } from "react-router-dom";
 import { Home, Compass, Bookmark, Bell, User } from "lucide-react";
 import useAuthStore from "../stores/AuthStore";
-import { Link, useLocation } from "react-router-dom";
 
-export default function PostVerseNavbar() {
+export const  Navbar = () => {
   const { isAuthenticated, logout } = useAuthStore();
-  const location = useLocation();
 
   const navItems = [
     { id: "feed", label: "Feed", icon: Home, route: "/feed" },
@@ -18,37 +17,34 @@ export default function PostVerseNavbar() {
     <nav className="fixed top-0 left-0 right-0 bg-black border-b border-neutral-800 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <h1 className="text-2xl font-bold cursor-pointer">
-          <Link to="/" className="hover:text-white transition-colors">PostVerse</Link>
-        </h1>
+        <h1 className="text-xl font-semibold cursor-pointer">PostVerse</h1>
 
-        {/* Navigation */}
+        {/* Navigation Links */}
         <ul className="flex items-center gap-6">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.route;
-            return (
-              <li key={item.id}>
-                <Link
-                  to={item.route}
-                  className={`flex items-center gap-2 text-sm ${
+          {navItems.map((item) => (
+            <li key={item.id}>
+              <NavLink
+                to={item.route}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 text-sm ${
                     isActive ? "text-white" : "text-neutral-500 hover:text-neutral-300"
-                  }`}
-                >
-                  <item.icon size={20} />
-                  <span className="hidden sm:inline">{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
+                  }`
+                }
+              >
+                <item.icon size={20} />
+                <span className="hidden sm:inline">{item.label}</span>
+              </NavLink>
+            </li>
+          ))}
         </ul>
 
-        {/* Auth Section */}
+        {/* Auth Buttons */}
         <div>
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               <button
                 onClick={logout}
-                className="px-3 py-1.5 text-sm rounded-md bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                className="px-3 py-1.5 text-sm rounded-md bg-neutral-800 hover:bg-neutral-700"
               >
                 Logout
               </button>
@@ -57,15 +53,18 @@ export default function PostVerseNavbar() {
               </div>
             </div>
           ) : (
-            <Link
+            <NavLink
               to="/login"
-              className="px-4 py-1.5 bg-white text-black text-sm font-medium rounded-md hover:bg-neutral-200 transition-colors"
+              className="px-4 py-1.5 bg-white text-black text-sm font-medium rounded-md hover:bg-neutral-200"
             >
               Login
-            </Link>
+            </NavLink>
           )}
         </div>
       </div>
     </nav>
   );
 }
+
+
+export default Navbar;

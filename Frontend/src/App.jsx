@@ -6,15 +6,17 @@ import ProtectedRoute from "./components/Layout/ProtectedRoute";
 import useAuthStore from "./stores/AuthStore";
 import { useEffect } from "react";
 import LandingPage from "./pages/HomePage";
+import FeedPage from "./pages/FeedPage";
 
 function App() {
-    const restoreAuth = useAuthStore((state) => state.restore);
+  const restoreAuth = useAuthStore((state) => state.restore);
 
   useEffect(() => {
     restoreAuth();
   }, []);
   return (
     <Routes>
+      <Route path="/feed" element={<FeedPage />} />
       <Route path="/" element={<LandingPage />} />
       <Route
         path="/home"
