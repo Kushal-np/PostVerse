@@ -13,6 +13,7 @@ export const LogoutButton = () =>{
         }
         catch(error){
             console.log("Signout failed" , error.message)
+            console.log("Debugged")
         }
     }
 
