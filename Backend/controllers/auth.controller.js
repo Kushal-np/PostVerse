@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
+import User from "../models/user.model.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -149,6 +150,46 @@ export const getMe = async(req , res)=>{
   }
   catch(error){
     return res.status(500).json({
+      success:false , 
+      message:"Internal server error"
+    })
+  }
+}
+
+
+export const updateTheme = async(req , res)=>{
+  try{
+    const userId = req.params.id ; 
+    const {theme} = req.body ; 
+    if(!theme){
+      return res.status(400).json({
+        success:false , 
+        message:"Invalid theme value"
+      });
+    }
+    const user = await User.findByIdAndUpdate(
+      userId , 
+      {theme} , 
+      {new:true , select:"username email role theme"}
+
+    )
+
+    if(!user){
+      return res.status(404).json({
+        success:false , 
+        message:"user not found"
+      })
+    }
+
+    res.status(500).json({
+      success:false , 
+      message:"Server error updating theme"
+    })
+
+  }
+  catch(error){
+    console.log(error.message)
+    res.status(500).json({
       success:false , 
       message:"Internal server error"
     })

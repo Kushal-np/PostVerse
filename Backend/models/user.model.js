@@ -45,11 +45,7 @@ const UserSchema = new mongoose.Schema({
             enum:["light","dark"],
             default:"light"
         },
-        emailNotifications:{
-            type:Boolean,
-            default:true
 
-        }
     },
     following:[{
         type:mongoose.Schema.Types.ObjectId , ref:"User"
