@@ -103,6 +103,7 @@ export const signin = async(req , res) => {
 
 export const signout = async(req, res) =>{
     try{
+      console.log("we are here")
         res.clearCookie("token");
 
         return res.status(200).json({
