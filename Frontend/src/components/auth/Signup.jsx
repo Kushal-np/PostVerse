@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useSignUp } from "../../queries/useAuth";
-import { useAuthStore } from "../../stores/AuthStore";
+import  useAuthStore  from "../../stores/AuthStore";
 
 
 

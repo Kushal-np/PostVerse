@@ -2,12 +2,12 @@ import api from "./axios";
 
 
 export const signUp = async(userData) =>{
-    const res = await api.post("/register" , userData) ; 
+    const res = await api.post("/user/register" , userData) ; 
     return res.data; 
 };
 
 export const login = async(credentials) =>{
-    const res = await api.post("/signin" , credentials);
+    const res = await api.post("/user/signin" , credentials);
     return res.data ; 
 };
 

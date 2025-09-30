@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../stores/AuthStore";
-import { useLogin } from "../../queries/useAuth";
+import useAuthStore  from "../../stores/AuthStore.js";
+import { useLogin } from "../../queries/useAuth.js";
 import { useState } from "react";
 
 
@@ -11,11 +11,13 @@ export const Login = () =>{
     const loginMutation = useLogin();
     const navigate = useNavigate();
 
-
     const handleSubmit = async(e) =>{
+        console.log(email)
+        console.log(password)
         e.preventDefault();
         try{
             const data = await loginMutation.mutateAsync({email , password});
+            console.log(data)
             if(data.success){
                 setAuth(data.user , data.token);
                 navigate("/");
@@ -33,8 +35,8 @@ export const Login = () =>{
 
     return (
         <form onSubmit={handleSubmit}>
-            <input type="email" value={email} placeholder="Enter Email" required onChange={(e)=>{e.target.value}}/>
-            <input type="password" value={password} placeholder="Enter password" required onChange={(e)=>{e.target.value}}/>
+            <input type="email" value={email} placeholder="Enter Email" required onChange={(e)=>{setEmail(e.target.value)}}/>
+            <input type="password" value={password} placeholder="Enter password" required onChange={(e)=>{setPassword(e.target.value)}}/>
             <button type="submit">
                 {
                     loginMutation.isLoading ? "Logging in..." : "Login"
