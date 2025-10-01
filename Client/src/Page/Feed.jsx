@@ -1,50 +1,60 @@
-import React from 'react';
-import { useFeedPosts } from '../hooks/usePosts';
-import useAuthStore from '../stores/authStore';
-import PostForm from '../components/PostForm';
+import React from "react";
+import { useFeedPosts } from "../hooks/usePosts";
+import useAuthStore from "../stores/authStore";
+import PostForm from "../components/PostForm";
+import PostCard from "../components/PostCard";
 
 function Feed() {
   const { user } = useAuthStore();
   const { data, fetchNextPage, hasNextPage, isLoading, error } = useFeedPosts();
-
-  console.log('Feed data:', data); // Debug
-  console.log('Feed error:', error); // Debug
-
   const posts = data?.pages?.flatMap((page) => page.posts || []) || [];
-  console.log(posts)
-  console.log("the above ones are the post")
+
+  const handleEdit = (post) => {
+    // Navigate to edit page or open modal
+  };
+
+  const handleDelete = (post) => {
+    // Delete logic
+  };
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Feed</h1>
-        {user && ['writer', 'editor', 'admin'].includes(user.role) && (
-          <div style={{ width: '300px' }}>
-            <PostForm />
-          </div>
-        )}
-      </div>
-      {isLoading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
-      {posts.length === 0 && !isLoading && !error && <p>No posts available</p>}
-      <div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 px-4 py-8">
+      {/* Feed Header */}
+      <h1 className="text-4xl font-bold text-center text-white mb-8">Your Feed</h1>
+      {/* Post Creation Form */}
+      {user && ["writer", "editor", "admin"].includes(user.role) && (
+        <div className="max-w-lg mx-auto mb-10">
+          <PostForm />
+        </div>
+      )}
+      {/* Loading / Error / Empty State */}
+      {isLoading && <p className="text-gray-300 text-center text-lg">Loading posts...</p>}
+      {error && <p className="text-red-400 text-center text-lg">{error.message}</p>}
+      {posts.length === 0 && !isLoading && !error && (
+        <p className="text-gray-300 text-center text-lg">No posts available</p>
+      )}
+      {/* Posts */}
+      <div className="flex flex-col items-center gap-6 max-w-lg mx-auto">
         {posts.map((post) => (
-          <div key={post._id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
-            <h3>{post.title}</h3>
-            <p>{post.bodyMarkDown}</p>
-            <p>By: {post.author?.username || 'Unknown'}</p>
-            <p>Status: {post.status}</p>
-            <p>Visibility: {post.visibility}</p>
-            {post.coverImage && <img src={post.coverImage.url} alt="Cover" style={{ maxWidth: '100%' }} />}
-          </div>
+          <PostCard
+            key={post._id}
+            post={post}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
+      {/* Load More */}
       {hasNextPage && (
-        <button
-          onClick={() => fetchNextPage()}
-          style={{ padding: '10px', background: '#007bff', color: 'white', border: 'none' }}
-        >
-          Load More
-        </button>
+        <div className="text-center mt-8">
+          <button
+            onClick={() => fetchNextPage()}
+            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 text-sm"
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "Load More"}
+          </button>
+        </div>
       )}
     </div>
   );

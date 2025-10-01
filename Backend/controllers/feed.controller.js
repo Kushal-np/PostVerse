@@ -2,7 +2,7 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import mongoose from "mongoose";
 
-export const getFeedPostsInfinite = async (req, res) => {
+export const  getFeedPostsInfinite = async (req, res) => {
   try {
     console.log('getFeedPostsInfinite: req.user:', JSON.stringify(req.user, null, 2)); // Debug
     const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null;
@@ -35,8 +35,8 @@ export const getFeedPostsInfinite = async (req, res) => {
     const posts = await Post.find(query)
       .sort({ createdAt: -1 })
       .limit(parseInt(limit))
-      .populate('author', 'username coverImage') // Populates author's fields
-      .populate('coverImage') // Populates post's coverImage with URL
+      .populate('author', 'username')
+      .populate("coverImage")
       .populate('tags category');
 
     console.log('getFeedPostsInfinite: Posts:', JSON.stringify(posts, null, 2)); // Debug

@@ -64,31 +64,31 @@ export const signin = async(req , res) => {
             });
         }
         const token = jwt.sign(
-        {
+        { 
             id:user._id , 
-            role: user.role
+            role: user.role 
         },
         process.env.JWT_SECRET_KEY , 
-        {expiresIn:"7d"}
+        {expiresIn:"7d"} 
         )
 
-        res.cookie("token" , token , {
+        res.cookie("token" , token , { 
             httpOnly:true , 
             secure : false , 
             sameSite:"strict" , 
-            maxAge: 7*24*60*60*1000
+            maxAge: 7*24*60*60*1000 
         });
 
         res.status(200).json({
             success:true , 
-            message:"Login successfull" ,
+            message:"Login successfull" , 
             token , 
             user:{
                 id:user._id , 
                 username:user.username , 
                 email:user.email , 
-                role:user.role
-            }
+                role:user.role 
+            } 
         })
 
     }
@@ -171,7 +171,6 @@ export const updateTheme = async(req , res)=>{
       userId , 
       {theme} , 
       {new:true , select:"username email role theme"}
-
     )
 
     if(!user){

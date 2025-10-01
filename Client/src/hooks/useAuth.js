@@ -15,7 +15,8 @@ export const useSignin = () => {
     mutationFn: signin,
     onSuccess: (res) => {
       console.log('Signin response:', res.data); // Debug
-      setUser(res.data.user, res.data.token);
+      console.log('Token received:', res.data.token); // Debug
+      setUser(res.data.user, res.data.token); // Ensure token is set
       console.log('useAuthStore after setUser:', useAuthStore.getState()); // Debug
     },
     onError: (error) => ({ message: error.response?.data?.message || 'Login failed' }),
@@ -44,10 +45,9 @@ export const useUpdateTheme = () =>{
 
     return useMutation({
         mutationFn: ({id , theme}) => updateTheme(id , theme) , 
-        onSuccess:(res) =>{
-            updateThemeStore(res.data.Me.Theme);
-            queryClient.invalidateQueries(["me"]);
-        }
-    })
-
+        onSuccess:(res) => {
+            updateThemeStore(res.data.Me.theme);
+            queryClient.invalidateQueries(['me']);
+        },
+    });
 }

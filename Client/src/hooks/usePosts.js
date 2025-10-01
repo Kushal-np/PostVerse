@@ -67,11 +67,14 @@ export const useUpdatePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updatePost,
-    onSuccess: (res, { id }) => {
+    onSuccess: (res) => {
+      console.log('UpdatePost response:', res); // Debug
+      if (!res) {
+        console.error('UpdatePost: No response data');
+        throw new Error('No response data');
+      }
       console.log('UpdatePost success:', res); // Debug
       queryClient.invalidateQueries(['posts']);
-      queryClient.invalidateQueries(['feed']);
-      queryClient.invalidateQueries(['post', id]);
     },
     onError: (error) => {
       console.error('UpdatePost error:', error.response?.data || error.message); // Debug

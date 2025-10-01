@@ -7,6 +7,7 @@ import slugify from "slugify"
 
 
 
+
 export const createPost = async (req, res) => {
   try {
     console.log('createPost: req.user:', req.user); // Debug
@@ -41,6 +42,7 @@ export const createPost = async (req, res) => {
       };
 
       const result = await streamUpload(req.file);
+
       coverImageDoc = await Media.create({
         url: result.secure_url,
         filename: req.file.originalname,
