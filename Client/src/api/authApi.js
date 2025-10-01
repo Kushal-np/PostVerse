@@ -5,7 +5,7 @@ export const register = async(data) =>{
 }
 
 export const signin = async(data) =>{
-    api.post('api/user/signin' , data)
+   return  api.post('api/user/signin' , data)
 }
 
 export const signout = async(data) =>{
@@ -13,7 +13,8 @@ export const signout = async(data) =>{
 }
 
 export const getMe = async() =>{
-    api.get("/api/user/me");
+    const response = await api.get("/api/user/me");
+    return response.data;
 }
 
 export const updateTheme = async(id,theme) =>{

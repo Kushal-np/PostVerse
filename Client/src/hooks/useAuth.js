@@ -1,19 +1,20 @@
-import {useMutation , useQuery , userQueryClient} from "@tanstack/react-query"
+import {useMutation , useQuery , useQueryClient} from "@tanstack/react-query"
 import { register , signin , signout , getMe , updateTheme } from "../api/authApi.js" 
 import useAuthStore from "../stores/authStore"
 
 export const useRegister = () =>{
-    useMutation({
+    return useMutation({
         mutationFn:register
 
     })
 };
 
 export const useSignin = () =>{
-    const setUser = useAuthStore((state) => set(state.setUser));
+    const setUser = useAuthStore((state) =>(state.setUser));
     return useMutation({
         mutationFn:signin , 
-        onSuccess: (res) => setUser(res.data.user , res.data.teken),
+        onSuccess: (res) => setUser(res.data.user , res.data.token),
+
     });
 };
 
@@ -27,14 +28,14 @@ export const useSignOut = ()=>{
 }
 
 
-export const getMe = () => useQuery({
+export const useGetMe = () => useQuery({
     queryKey:["me"] , 
     queryFn: getMe 
 })
 
 
 export const useUpdateTheme = () =>{
-    const queryClient = userQueryClient();
+    const queryClient = useQueryClient();
     const updateThemeStore = useAuthStore((state) =>{state.updateTheme});
 
     return useMutation({
