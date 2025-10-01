@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { deletePost, getFeedPosts, getPostById, getPosts, updatePost } from "../api/postApi"
+import { createPost, deletePost, getFeedPosts, getPostById, getPosts, updatePost } from "../api/postApi"
 import useAuthStore from "../stores/authStore";
 
 
@@ -43,7 +43,7 @@ export const usePostById =(id) =>{
 };
 
 
-export const createPost = () =>{
+export const useCreatePost = () =>{
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn:createPost , 
