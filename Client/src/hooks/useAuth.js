@@ -8,14 +8,18 @@ export const useRegister = () =>{
 
     })
 };
-
-export const useSignin = () =>{
-    const setUser = useAuthStore((state) =>(state.setUser));
-    return useMutation({
-        mutationFn:signin , 
-        onSuccess: (res) => setUser(res.data.user , res.data.token),
-
-    });
+console.log(useAuthStore.getState())
+export const useSignin = () => {
+  const setUser = useAuthStore((state) => state.setUser);
+  return useMutation({
+    mutationFn: signin,
+    onSuccess: (res) => {
+      console.log('Signin response:', res.data); // Debug
+      setUser(res.data.user, res.data.token);
+      console.log('useAuthStore after setUser:', useAuthStore.getState()); // Debug
+    },
+    onError: (error) => ({ message: error.response?.data?.message || 'Login failed' }),
+  });
 };
 
 

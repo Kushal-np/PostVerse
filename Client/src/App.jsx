@@ -8,6 +8,8 @@ import {BrowserRouter , Routes , Route} from "react-router-dom"
 import Home from './Page/Home'
 import Login from './Page/Login'
 import AdminPanel from './Page/AdminPanel'
+import PostDetail from './Page/PostDetail'
+import PostForm from './components/PostForm'
 
 const App = () => {
   return (
@@ -20,6 +22,13 @@ const App = () => {
         <Route path="/feed" element={<ProtectedRoute><Feed/></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminPanel/></ProtectedRoute>}/>
+        <Route path="/post/:id" element={<ProtectedRoute>
+          <PostDetail/>
+          </ProtectedRoute>}/>
+        <Route path="/create-post" element={
+          <PostForm />
+       }/>
+        <Route path="/post/:id/edit" element={<ProtectedRoute allowedRoles={["writer" , "editor" , "admin"]}><PostDetail/></ProtectedRoute>} />
       </Routes>
       </BrowserRouter>
   )

@@ -2,20 +2,35 @@ import Post from "../models/post.model.js";
 import Media from "../models/Media.model.js";
 import streamifier from "streamifier";
 import cloudinary from "../config/cloudinary.js"
+import slugify from "slugify"
+
+
+
 
 export const createPost = async (req, res) => {
   try {
-    console.log("req.user:", req.user);
+    console.log('createPost: req.user:', req.user); // Debug
+    console.log('createPost: req.body:', req.body); // Debug
+    console.log('createPost: req.file:', req.file); // Debug
 
-    const { title, slug, bodyMarkDown, status, visibility } = req.body;
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: No user found' });
+    }
+
+    const { title, slug: providedSlug, bodyMarkDown, status, visibility } = req.body;
+
+    if (!title || !bodyMarkDown) {
+      return res.status(400).json({ success: false, message: 'Title and bodyMarkDown are required' });
+    }
+
+    const slug = providedSlug || slugify(title, { lower: true, strict: true });
 
     let coverImageDoc;
-
     if (req.file) {
       const streamUpload = (reqFile) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { folder: "blog_posts" },
+            { folder: 'blog_posts' },
             (error, result) => {
               if (result) resolve(result);
               else reject(error);
@@ -26,7 +41,6 @@ export const createPost = async (req, res) => {
       };
 
       const result = await streamUpload(req.file);
-
       coverImageDoc = await Media.create({
         url: result.secure_url,
         filename: req.file.originalname,
@@ -35,7 +49,7 @@ export const createPost = async (req, res) => {
       });
     }
 
-    const publishedAt = status === "published" ? new Date() : null;
+    const publishedAt = status === 'published' ? new Date() : null;
 
     const newPost = await Post.create({
       title,
@@ -43,21 +57,24 @@ export const createPost = async (req, res) => {
       bodyMarkDown,
       author: req.user._id,
       coverImage: coverImageDoc ? coverImageDoc._id : null,
-      status: status || "draft",
-      visibility: visibility || "public",
+      status: status || 'draft',
+      visibility: visibility || 'public',
       publishedAt,
     });
 
     const populatedPost = await Post.findById(newPost._id)
-    .populate("coverImage")
-    .populate("author" , "username role");
+      .populate('coverImage')
+      .populate('author', 'username role');
 
-    res.status(201).json({ success: true, post:populatedPost });
+    console.log('createPost: Created post:', populatedPost); // Debug
+
+    res.status(201).json({ success: true, post: populatedPost });
   } catch (err) {
-    console.error("Create Post Error:", err);
-    res.status(500).json({ success: false, message: "Server error creating post" });
+    console.error('Create Post Error:', err);
+    res.status(500).json({ success: false, message: 'Server error creating post', error: err.message });
   }
 };
+
 
 export const getPosts = async (req, res) => {
   try {
