@@ -31,7 +31,7 @@ app.use("/api/follow" , followRoutes);
 app.use("/api/likes" , likeRoutes);
 app.use("api/CategoryAndTags/" , categoriesAndTagsRoutes);
 app.use("/api/Notifications" , notificationRoutes);
-app.use("/api/picture" , profileRoutes);
+app.use("/api/pictures" , profileRoutes);
 app.use("/api/home" , feedRoutes)
 app.listen(PORT , ()=>{
     console.log(`Server is running at the ${PORT}`); 

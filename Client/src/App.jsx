@@ -11,6 +11,7 @@ import AdminPanel from './Page/AdminPanel'
 import PostDetail from './Page/PostDetail'
 import PostForm from './components/PostForm'
 
+
 const App = () => {
   return (
 <BrowserRouter>
@@ -29,6 +30,7 @@ const App = () => {
           <PostForm />
        }/>
         <Route path="/post/:id/edit" element={<ProtectedRoute allowedRoles={["writer" , "editor" , "admin"]}><PostDetail/></ProtectedRoute>} />
+        <Route path='/profile' element={<Profile />} />
       </Routes>
       </BrowserRouter>
   )

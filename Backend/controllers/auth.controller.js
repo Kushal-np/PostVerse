@@ -139,22 +139,18 @@ export const getAllUsers = async(req , res) =>{
   }
 }
 
-export const getMe = async(req , res)=>{
-  try{
-    const userId = req.user._id ; 
-    const Me = await User.findById(userId).select("username email role theme")
-    res.status(201).json({
-      success:true , 
-      Me , 
-    })
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('username email profilePicture coverPicture theme role'); // Ensure these fields
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, Me: user });
+  } catch (error) {
+    console.error('GetMe error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
-  catch(error){
-    return res.status(500).json({
-      success:false , 
-      message:"Internal server error"
-    })
-  }
-}
+};
 
 
 export const updateTheme = async(req , res)=>{

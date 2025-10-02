@@ -1,3 +1,5 @@
+import api from ".";
+
 export const updateProfileImage = async({type,image}) =>{
     const formData = new FormData();
     formData.append(`image` , image);
@@ -7,3 +9,4 @@ export const updateProfileImage = async({type,image}) =>{
     });
     return res.data.user ; 
 }
+

@@ -1,3 +1,5 @@
+import api from ".";
+
 export const createCategory = async(data) =>{
     const res = await api.post(`/api/CategoryAndTags/categories` , data) ; 
     return res.data.category ; 

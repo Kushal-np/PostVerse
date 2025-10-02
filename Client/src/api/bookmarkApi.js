@@ -1,3 +1,5 @@
+import api from ".";
+
 export const addBookmark = async(postId) =>{
     const res = await api.post(`/api/bookmarks/${postId}`);
     return res.data.bookmarks ; 

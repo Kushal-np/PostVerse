@@ -1,3 +1,5 @@
+import api from ".";
+
 export const createComment = async({postId , parent , body}) =>{
     const res = await api.post(`/api/comments` , {postId , parent , body});
     return res.data.comment ; 

@@ -4,8 +4,8 @@ import streamifier from "streamifier";
 
 export const updateProfileImage = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const { type } = req.body; // "profile" or "cover"
+    const userId  = req.user.id;
+    const type = req.body;
 
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No image uploaded" });

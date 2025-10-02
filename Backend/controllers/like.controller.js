@@ -71,6 +71,7 @@ export const toggleLikePost = async (req, res) => {
 
 export const getLikes = async (req, res) => {
   try {
+    console.log("Hell world")
     const { postId, commentId } = req.query;
 
     const query = {};

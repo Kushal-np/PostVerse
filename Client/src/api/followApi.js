@@ -1,3 +1,5 @@
+import api from ".";
+
 export const followUser = async(userId) =>{
     const res = await api.post(`/api/follow/${userId}`);
     return res.data.follow;
