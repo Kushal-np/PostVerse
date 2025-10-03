@@ -1,19 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createCategory, createTag, deleteCategory, deleteTag, getCategories, getTags } from "../api/categoryTagApi";
+import {
+  createCategory,
+  createTag,
+  deleteCategory,
+  deleteTag,
+  getCategories,
+  getTags,
+} from "../api/categoryAndTagApi";
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(['categories']);
+      queryClient.invalidateQueries(["categories"]);
     },
   });
 };
 
 export const useGetCategories = () => {
   return useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: getCategories,
   });
 };
@@ -23,7 +30,7 @@ export const useDeleteCategory = () => {
   return useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(['categories']);
+      queryClient.invalidateQueries(["categories"]);
     },
   });
 };
@@ -33,14 +40,14 @@ export const useCreateTag = () => {
   return useMutation({
     mutationFn: createTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(['tags']);
+      queryClient.invalidateQueries(["tags"]);
     },
   });
 };
 
 export const useGetTags = () => {
   return useQuery({
-    queryKey: ['tags'],
+    queryKey: ["tags"],
     queryFn: getTags,
   });
 };
@@ -50,7 +57,7 @@ export const useDeleteTag = () => {
   return useMutation({
     mutationFn: deleteTag,
     onSuccess: () => {
-      queryClient.invalidateQueries(['tags']);
+      queryClient.invalidateQueries(["tags"]);
     },
   });
 };

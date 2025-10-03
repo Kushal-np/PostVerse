@@ -1,26 +1,26 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const MediaSchema = new mongoose.Schema(
   {
     url: {
       type: String,
-      required: true, 
+      required: true,
     },
     filename: {
-      type: String, 
+      type: String,
     },
     mimeType: {
-      type: String, 
+      type: String,
     },
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Media =  mongoose.model('Media', MediaSchema);
+const Media = mongoose.model("Media", MediaSchema);
 
-export default Media ;
+export default Media;

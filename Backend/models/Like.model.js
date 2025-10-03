@@ -1,29 +1,26 @@
+// models/Like.model.js
 import mongoose from "mongoose";
 
-
-const likeSchema = new mongoose.Schema({
-    user:{
-        type:mongoose.Schema.Types.ObjectId, 
-        ref:"User" , 
-        required:true , 
+const likeSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and String
+      required: true,
     },
-    post:{
-        type:mongoose.Schema.Types.ObjectId , 
-        ref:"Post" , 
-
+    post: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: true,
     },
-    comment:{
-        type:mongoose.Schema.Types.ObjectId , 
-        ref:"Comment"
+    type: {
+      type: String,
+      enum: ["like", "dislike", "love", "fire"],
+      default: "like",
     },
-    type:{
-        type:String , 
-        enum:["like" , "love" , "fire" , "thumb"] , 
-        default:"like" , 
-    }
+  },
+  { timestamps: true }
+);
 
-},{
-    timestamps:true
-});
-const Like = mongoose.model("Like" , likeSchema);
-export default Like ; 
+const Like = mongoose.model("Like", likeSchema);
+
+export default Like; // Export the model, not the schema

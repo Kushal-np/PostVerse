@@ -1,9 +1,8 @@
-import express from "express"
-import { unifiedSearch } from "../controllers/search.controller";
+import express from "express";
+import { unifiedSearch } from "../controllers/search.controller.js";
+
 const router = express.Router();
 
+router.get("/search", unifiedSearch);
 
-router.post("/search" ,unifiedSearch )
-
-
-export default router ; 
+export default router;

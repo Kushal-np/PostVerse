@@ -6,19 +6,20 @@ const tagSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim:true 
+      trim: true,
     },
     slug: {
       type: String,
       required: true,
       unique: true,
-      lowercase : true
+      lowercase: true,
     },
   },
   {
-    timeStamps: true,
+    timestamps: true,
   }
 );
 
-const Tag = mongoose.model("Tag" , tagSchema);
-export default Tag ; 
+const Tag = mongoose.model("Tag", tagSchema);
+
+export default Tag;

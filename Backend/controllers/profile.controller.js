@@ -4,13 +4,11 @@ import streamifier from "streamifier";
 
 export const updateProfileImage = async (req, res) => {
   try {
-    const userId  = req.user.id;
-    const type = req.body;
-
+    const userId = req.user._id;
+    const { type } = req.body;
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No image uploaded" });
     }
-
     const uploadFromBuffer = (buffer) =>
       new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -22,17 +20,11 @@ export const updateProfileImage = async (req, res) => {
         );
         streamifier.createReadStream(buffer).pipe(stream);
       });
-
     const result = await uploadFromBuffer(req.file.buffer);
-
-    const updateField =
-      type === "cover"
-        ? { coverPicture: result.secure_url }
-        : { profilePicture: result.secure_url };
-
-    const updatedUser = await User.findByIdAndUpdate(userId, { $set: updateField }, { new: true })
-      .select("username email profilePicture coverPicture");
-
+    const updateField = type === "cover" ? { coverPicture: result.secure_url } : { profilePicture: result.secure_url };
+    const updatedUser = await User.findByIdAndUpdate(userId, { $set: updateField }, { new: true }).select(
+      "username email profilePicture coverPicture"
+    );
     res.status(200).json({
       success: true,
       message: `${type} picture updated`,

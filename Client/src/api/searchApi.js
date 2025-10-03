@@ -1,7 +1,6 @@
 import api from ".";
 
-export const unifiedSearch = async(q) =>{
-    const res = await api.post(`/api/search` , {q});
-    return res.data ; 
+export const unifiedSearch = async (q) => {
+  const res = await api.get(`/api/search/search?q=${q}`);
+  return res.data;
 };
-

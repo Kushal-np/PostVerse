@@ -1,67 +1,76 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-    username:{
-        type:String , 
-        unique:true , 
-        required:true , 
+const UserSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: true,
     },
-    email:{
-        type:String , 
-        unique:true , 
-        required : true ,
+    email: {
+      type: String,
+      unique: true,
+      required: true,
     },
-    password:{
-        type:String , 
-        required:true 
+    password: {
+      type: String,
+      required: true,
     },
-    role:{
-        type:String, 
-        enum: ["reader" , "writer" , "editor" , "admin"] ,
-        default:"reader" , 
-    } , 
-    name:{
-        type:String , 
+    role: {
+      type: String,
+      enum: ["reader", "writer", "editor", "admin"],
+      default: "reader",
     },
-    bio:{
-        type:String , 
+    name: {
+      type: String,
     },
-    profilePicture:{
-        type:String , 
-        default:""
+    bio: {
+      type: String,
     },
-    coverPicture:{
-        type:String , 
-        default:""
+    profilePicture: {
+      type: String,
+      default: "",
     },
-    social:{
-        twitter:String,
-        github:String ,
-        website:String
+    coverPicture: {
+      type: String,
+      default: "",
     },
-    settings:{
-        theme:{
-            type:String,
-            enum:["light","dark"],
-            default:"light"
-        },
+    social: {
+      twitter: String,
+      github: String,
+      website: String,
+    },
+    settings: {
+      theme: {
+        type: String,
+        enum: ["light", "dark"],
+        default: "light",
+      },
+    },
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
-    },
-    following:[{
-        type:mongoose.Schema.Types.ObjectId , ref:"User"
-    }],
-    followers:[{
-        type:mongoose.Schema.Types.ObjectId , ref:"User"
-    }],
-    bookmarks:[{
-        type:mongoose.Schema.Types.ObjectId , ref:"Post"
-    }]
-} , {
-    timestamps:true
-})
+const User = mongoose.model("User", UserSchema);
 
-
-
-
-const User = mongoose.model("User",UserSchema) ;
-export default User ; 
+export default User;

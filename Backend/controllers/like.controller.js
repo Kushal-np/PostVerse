@@ -1,28 +1,28 @@
+// controllers/like.controller.js
 import Like from "../models/Like.model.js";
 import Post from "../models/post.model.js";
+import mongoose from "mongoose"; // Import mongoose
 
 export const toggleLikePost = async (req, res) => {
   try {
-    console.log("Toggle post reaction");
-    const Reaction_Types = ["like", "dislike", "love", "fire"];
+    const REACTION_TYPES = ["like", "dislike", "love", "fire"];
     const { postId } = req.params;
     const { type } = req.body;
-    const userId = req.user._id;
 
-    if (!Reaction_Types.includes(type)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid reaction type",
-      });
+    if (!REACTION_TYPES.includes(type)) {
+      return res.status(400).json({ success: false, message: "Invalid reaction type" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ success: false, message: "Invalid post ID" });
     }
 
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
+      return res.status(404).json({ success: false, message: "Post not found" });
     }
+
+    const userId = req.user ? req.user._id : req.ip;
 
     let reaction = await Like.findOne({ user: userId, post: postId });
     let message = "Reaction updated";
@@ -30,7 +30,7 @@ export const toggleLikePost = async (req, res) => {
     if (!reaction) {
       reaction = await Like.create({ user: userId, post: postId, type });
     } else if (reaction.type === type) {
-      await reaction.deleteOne();
+      await Like.deleteOne({ _id: reaction._id });
       message = "Reaction removed";
     } else {
       reaction.type = type;
@@ -38,11 +38,11 @@ export const toggleLikePost = async (req, res) => {
     }
 
     const reactionCounts = await Like.aggregate([
-      { $match: { post: post._id } },
+      { $match: { post: new mongoose.Types.ObjectId(postId) } },
       { $group: { _id: "$type", count: { $sum: 1 } } },
     ]);
 
-    const reactions = Reaction_Types.reduce((acc, t) => {
+    const reactions = REACTION_TYPES.reduce((acc, t) => {
       acc[t] = 0;
       return acc;
     }, {});
@@ -57,39 +57,41 @@ export const toggleLikePost = async (req, res) => {
       reactions,
     });
   } catch (error) {
-    console.log("Toggle reaction post error");
-    console.log(error.message);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    console.error("Toggle reaction error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
 export const getLikes = async (req, res) => {
   try {
-    console.log("Hell world")
-    const { postId, commentId } = req.query;
+    const { postId } = req.params;
 
-    const query = {};
-    if (postId) query.post = postId;
-    if (commentId) query.comment = commentId;
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ success: false, message: "Invalid post ID" });
+    }
 
-    const likes = await Like.find(query).populate("user", "username email role");
+    const reactionCounts = await Like.aggregate([
+      { $match: { post: new mongoose.Types.ObjectId(postId) } },
+      { $group: { _id: "$type", count: { $sum: 1 } } },
+    ]);
+
+    const reactions = {
+      like: 0,
+      dislike: 0,
+      love: 0,
+      fire: 0,
+    };
+
+    reactionCounts.forEach((rc) => {
+      reactions[rc._id] = rc.count;
+    });
 
     res.status(200).json({
       success: true,
-      likes,
-      count: likes.length
+      likes: reactions,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    });
+    console.error("Get likes error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };

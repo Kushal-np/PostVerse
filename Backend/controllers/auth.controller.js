@@ -1,12 +1,10 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
-    console.log("We are here already, this signin one")
-    const { username, email, password ,role} = req.body;
-
+    const { username, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -14,19 +12,15 @@ export const registerUser = async (req, res) => {
         message: "User already exists with this email",
       });
     }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
-      role: role || "reader"
+      role: role || "reader",
     });
-
     await newUser.save();
-
     res.status(201).json({
       success: true,
       message: "User registered successfully",
@@ -45,148 +39,132 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
-export const signin = async(req , res) => {
-    try{
-        const {email, password} = req.body;
-        const user = await User.findOne({email});
-        if(!user){
-            return res.status(400).json({
-                success:false , 
-                message:"Invalid username or password"
-            });
-        }
-        const isMatch = await bcrypt.compare(password , user.password);
-        if(!isMatch){
-            return res.status(400).json({
-                success:false, 
-                message:"Invalid password or username"
-            });
-        }
-        const token = jwt.sign(
-        { 
-            id:user._id , 
-            role: user.role 
-        },
-        process.env.JWT_SECRET_KEY , 
-        {expiresIn:"7d"} 
-        )
-
-        res.cookie("token" , token , { 
-            httpOnly:true , 
-            secure : false , 
-            sameSite:"strict" , 
-            maxAge: 7*24*60*60*1000 
-        });
-
-        res.status(200).json({
-            success:true , 
-            message:"Login successfull" , 
-            token , 
-            user:{
-                id:user._id , 
-                username:user.username , 
-                email:user.email , 
-                role:user.role 
-            } 
-        })
-
+export const signin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
-    catch(error){
-        console.log("Login error" , error);
-        res.status(500).json({
-            success:false , 
-            message:"Sever error during login"
-        })
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
     }
-}
-
-
-export const signout = async(req, res) =>{
-    try{
-      console.log("we are here")
-        res.clearCookie("token");
-
-        return res.status(200).json({
-            success:true , 
-            message:"Logged out successfully"
-        });
-    }
-    catch(error){
-        console.log("Logout Error:" , error)
-        res.status(500).json({
-            success:false , 
-            message : "Server error during logout"
-        });
-    }
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.log("Login error", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during login",
+    });
+  }
 };
 
-
-
-export const getAllUsers = async(req , res) =>{
-  try{
-    const user = await User.find();
-    res.status(201).json({
-      user , 
-    })
+export const signout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.log("Logout Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during logout",
+    });
   }
-  catch(error){
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
     console.log(error.message);
     res.status(500).json({
-      success:false , 
-      message: "Internal server error"
-    })
+      success: false,
+      message: "Internal server error",
+    });
   }
-}
+};
 
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('username email profilePicture coverPicture theme role'); // Ensure these fields
+    const user = await User.findById(req.user._id).select(
+      "username email profilePicture coverPicture settings.role"
+    );
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
-    res.status(200).json({ success: true, Me: user });
+    res.status(200).json({ success: true, user });
   } catch (error) {
-    console.error('GetMe error:', error);
+    console.error("GetMe error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-export const updateTheme = async(req , res)=>{
-  try{
-    const userId = req.params.id ; 
-    const {theme} = req.body ; 
-    if(!theme){
+export const updateTheme = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { theme } = req.body;
+    if (!theme) {
       return res.status(400).json({
-        success:false , 
-        message:"Invalid theme value"
+        success: false,
+        message: "Invalid theme value",
       });
     }
     const user = await User.findByIdAndUpdate(
-      userId , 
-      {theme} , 
-      {new:true , select:"username email role theme"}
-    )
-
-    if(!user){
+      userId,
+      { "settings.theme": theme },
+      { new: true, select: "username email role settings.theme" }
+    );
+    if (!user) {
       return res.status(404).json({
-        success:false , 
-        message:"user not found"
-      })
+        success: false,
+        message: "User not found",
+      });
     }
-
+    res.status(200).json({
+      success: true,
+      message: "Theme updated",
+      user,
+    });
+  } catch (error) {
+    console.log(error.message);
     res.status(500).json({
-      success:false , 
-      message:"Server error updating theme"
-    })
-
+      success: false,
+      message: "Internal server error",
+    });
   }
-  catch(error){
-    console.log(error.message)
-    res.status(500).json({
-      success:false , 
-      message:"Internal server error"
-    })
-  }
-}
+};

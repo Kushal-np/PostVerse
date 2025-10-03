@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const PostSchema = new mongoose.Schema(
   {
@@ -10,50 +10,52 @@ const PostSchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true, 
+      unique: true,
     },
     bodyMarkDown: {
       type: String,
-      required: true, 
+      required: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true, 
+      ref: "User",
+      required: true,
     },
     coverImage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Media', 
+      ref: "Media",
     },
-    commentsCount:{
-      type:Number , 
-      default:0
+    commentsCount: {
+      type: Number,
+      default: 0,
     },
     status: {
       type: String,
-      enum: ['draft', 'published'],
-      default: 'draft', 
+      enum: ["draft", "published"],
+      default: "draft",
     },
     visibility: {
       type: String,
-      enum: ['public', 'private'],
-      default: 'public', 
+      enum: ["public", "private"],
+      default: "public",
     },
     publishedAt: {
-      type: Date, 
+      type: Date,
     },
-    category:{
-      type:mongoose.Schema.Types.ObjectId , 
-      ref:"Category" ,
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
-    tags:[{
-      type:mongoose.Schema.Types.ObjectId , 
-      ref:"Tag"
-    }]
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const Post = mongoose.model("Post" , PostSchema)
+const Post = mongoose.model("Post", PostSchema);
 
-export default Post ; 
+export default Post;

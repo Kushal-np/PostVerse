@@ -6,7 +6,7 @@ export const useFollowUser = () => {
   return useMutation({
     mutationFn: followUser,
     onSuccess: () => {
-      queryClient.invalidateQueries(['followers']);
+      queryClient.invalidateQueries(["followers"]);
     },
   });
 };
@@ -16,14 +16,14 @@ export const useUnfollowUser = () => {
   return useMutation({
     mutationFn: unfollowUser,
     onSuccess: () => {
-      queryClient.invalidateQueries(['followers']);
+      queryClient.invalidateQueries(["followers"]);
     },
   });
 };
 
 export const useGetFollowers = (userId) => {
   return useQuery({
-    queryKey: ['followers', userId],
+    queryKey: ["followers", userId],
     queryFn: () => getFollowers(userId),
     enabled: !!userId,
   });

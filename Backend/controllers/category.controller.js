@@ -11,11 +11,19 @@ export const createCategory = async (req, res) => {
 };
 
 export const getCategories = async (req, res) => {
-  const categories = await Category.find();
-  res.status(200).json({ success: true, categories });
+  try {
+    const categories = await Category.find();
+    res.status(200).json({ success: true, categories });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching categories" });
+  }
 };
 
 export const deleteCategory = async (req, res) => {
-  await Category.findByIdAndDelete(req.params.id);
-  res.status(200).json({ success: true, message: "Category deleted" });
+  try {
+    await Category.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: "Category deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error deleting category" });
+  }
 };

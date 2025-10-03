@@ -6,14 +6,13 @@ export const useUpdateProfileImage = () => {
   return useMutation({
     mutationFn: updateProfileImage,
     onSuccess: (data) => {
-      // Update the query cache with the new user data
-      queryClient.setQueryData(['me'], (old) => {
-        if (old && old.Me) {
-          return { ...old, Me: { ...old.Me, ...data.user } };
+      queryClient.setQueryData(["me"], (old) => {
+        if (old && old.user) {
+          return { ...old, user: { ...old.user, ...data } };
         }
         return old;
       });
-      queryClient.invalidateQueries(['me']); // Trigger refetch as backup
+      queryClient.invalidateQueries(["me"]);
     },
   });
 };
